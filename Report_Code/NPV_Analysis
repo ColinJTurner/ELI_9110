@@ -1,0 +1,58 @@
+close all; clear all; clc;
+
+% Parameters
+rrr = 0.25; Inflation = 0.0315; % Rate of return & Inflation
+I0 = [-200e6, -60e6]; % Initial Investments
+n = 20; % 20 years
+Loan = [-60e6, -18e6]; % No interest loan
+Loan_Interest = [-69e6, -20.7e6]; % Interest laon
+PFV = [204*3e6, 78*3e6]; % Production future value
+r = rrr + Inflation;  % Discount rate with inflation
+Op_Cost = [-95e6, -77e6]; % Operational cost
+
+% Initialize NPV arrays
+npv = zeros(2, n+1);  % Adjusting size to account for time starting at t=0
+total_npv = zeros(2,1);
+for i = 1:2
+
+    % Cash flow functions, note PFV & Loan Values change with stage
+    cash_flow_1 = @(t,i) Loan(i) + Op_Cost(i) * (1 + Inflation).^t;
+    cash_flow_2 = @(t,i) PFV(i) + Loan_Interest(i) + Op_Cost(i) * (1 + Inflation).^t;
+    cash_flow_3 = @(t,i) PFV(i) + Op_Cost(i) * (1 + Inflation).^t;
+
+    % Calculate NPV
+    for t = 0:n  % Start from t = 0
+        if t == 0 % Set Initial Investment
+            npv(i, t+1) = I0(i);
+        elseif t <= 3 && i == 1 % i = 1, Option 1
+            npv(i, t+1) = npv(i, t) + cash_flow_1(t, i) / (1 + r)^t;
+        elseif t <= 8 && i == 1 % i = 1, Option 1
+            npv(i, t+1) = npv(i, t) + cash_flow_2(t, i) / (1 + r)^t;
+        elseif t <= 2 && i == 2 % i = 2, Option 2
+            npv(i, t+1) = npv(i, t) + cash_flow_1(t, i) / (1 + r)^t;
+        elseif t <= 6 && i == 2 % i = 2, Option 2
+            npv(i, t+1) = npv(i, t) + cash_flow_2(t, i) / (1 + r)^t;
+        else % Same for both
+            npv(i, t+1) = npv(i, t) + cash_flow_3(t, i) / (1 + r)^t;
+        end
+    end
+    % Sum up the NPV values
+    total_npv(i) = sum(npv(i,:));
+end
+
+% Plot NPV against time
+plot(0:n, npv, 'b-o');  % Adjusting x-axis to start from t=0
+xlabel('Time (year)');
+ylabel('NPV ($)');
+title('Net Present Value (NPV)');
+grid on;
+legend('New Facility', 'Facility OverHaul');
+line_colors = {'red', 'blue'};
+lines = findobj(gcf, 'Type', 'Line');
+for i = 1:numel(lines)
+    set(lines(i), 'Color', line_colors{i});
+end
+
+% Display total NPV on the graph
+text(8, -70e6, sprintf('Total NPV (New Facility): %.2f Million', total_npv(1) / 1e6), 'Color', 'blue');
+text(8, -100e6, sprintf('Total NPV (Facility OverHaul): %.2f Million', total_npv(2) / 1e6), 'Color', 'red');
