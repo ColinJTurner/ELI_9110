@@ -1,0 +1,76 @@
+close all;clear all; clc;
+% Define the data
+data1 = [203,202,203,204,204,204,203,204];
+data2 = [204,204,204,192,205,206,204,206];
+data3 = [203,203,202,202,203,203,204,202];
+
+% Calculate the mean and standard deviation
+mean1 = mean(data1);
+std_dev1 = std(data1);
+
+mean2 = mean(data2);
+std_dev2 = std(data2);
+
+mean3 = mean(data3);
+std_dev3 = std(data3);
+
+% Define the lower control limits (assuming normal distribution)
+LCL = 203;
+
+% Plotting control chart for data1
+subplot(2,2,1);
+plot(data1, '-o');
+hold on;
+plot([1,length(data1)], [LCL,LCL], '--r'); % Lower Control Limit
+plot([1,length(data1)], [mean1,mean1], '-g'); % Mean
+title('Control Chart for London');
+xlabel('Sample Number');
+ylabel('Planes Per Year');
+ylim([201 205]);
+xlim([1 8]);
+legend('Data', 'LCL', 'Mean');
+grid on;
+hold off;
+
+% Magnification plot for data1
+subplot(2,2,3);
+plot(data1, '-o');
+hold on;
+plot([1,length(data2)], [LCL,LCL], '--r'); % Lower Control Limit
+plot([1,length(data2)], [mean1,mean1], '-g'); % Mean
+xlim([1,length(data1)]);
+ylim([202,205]);
+title('Magnification Plot for London');
+xlabel('Sample Number');
+ylabel('Planes Per Year');
+grid on;
+hold off;
+
+% Plotting control chart for data2
+subplot(2,2,2);
+plot(data2, '-o');
+hold on;
+plot([1,length(data2)], [LCL,LCL], '--r'); % Lower Control Limit
+plot([1,length(data2)], [mean2,mean2], '-g'); % Mean
+title('Control Chart for Windsor');
+xlabel('Sample Number');
+ylabel('Planes Per Year');
+ylim([191 208]);
+xlim([1 8]);
+legend('Data', 'LCL', 'Mean');
+grid on;
+hold off;
+
+% Magnification plot for data2
+subplot(2,2,4);
+plot(data2, '-o');
+hold on;
+plot([1,length(data2)], [LCL,LCL], '--r'); % Lower Control Limit
+plot([1,length(data2)], [mean2,mean2], '-g'); % Mean
+xlim([2,6]);
+ylim([202,205]);
+title('Magnification Plot for Windsor');
+xlabel('Sample Number');
+ylabel('Planes Per Year');
+grid on;
+hold off;
